@@ -50,16 +50,18 @@ def get_MBF_indices(network,MBFs):
     
 ```
 
-To find the DSGRN neighbors of the MBFs, do
+To find the MBF indices and the DSGRN neighbors of the MBFs at the same time, do
 
 ```python
+import DSGRN
 import dsgrn_utilities.get_parameter_neighbors as pn
 
-def get_MBF_neighbors(parametergraph,MBF_indices):
-    neighbors = pn.get_parameter_neighbors_from_list(parametergraph,MBF_indices)
-    return neighbors
+def get_MBF_neighbors(networkfile, path2DSGRN):
+    network = DSGRN.Network(networkfile)
+    MBF_indices, neighbors = pn.get_Boolean_parameter_neighbors(network,path2DSGRN)
+    return MBF_indices, neighbors
 ```
-The neighbors list includes the original MBF indices along with the co-dimension 1 adjacent parameters.
+The `MBF_indices` do not include duplicates; i.e., those neighbors of MBFs that only exhibit a threshold permutation and therefore are exactly the same MBF. The neighbor list also includes no MBFs, regardless of threshold perturbation. However, the `neighbors` list includes all neighbors of MBFs across all threshold permutations.
 
 # Description of modules
 To come.

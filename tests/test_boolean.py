@@ -1,4 +1,4 @@
-import DSGRN, os
+import DSGRN, os, itertools
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.select_boolean_params as selectbool
 
@@ -44,7 +44,7 @@ def test2(path2DSGRN=os.path.expanduser("../../DSGRN")):
     D : (~A)(~B) : E"""
     network = DSGRN.Network(network_spec)
     pg = DSGRN.ParameterGraph(network)
-    boolean_params = selectbool.subset_boolean_parameters(network,path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters_single_order(network,path2DSGRN)
     print("This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     assert(len(boolean_params) == 16)
     for param in boolean_params:
@@ -74,3 +74,39 @@ def test3():
     network = DSGRN.Network(network_file)
     boolean_params = selectbool.subset_boolean_parameters(network,path2DSGRN)
     assert(len(boolean_params) == 1458)
+
+
+def test4(path2DSGRN=os.path.expanduser("../../DSGRN")):
+    network_spec = """
+    A : (~B) : E
+    B : (~A)(~C) : E
+    C : (A) : E"""
+    network = DSGRN.Network(network_spec)
+    boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
+    print(
+        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+    assert(len(boolean_params) == 4)
+    logics = set([tuple([param.logic()[j].hex() for j in range(network.size())]) for param in boolean_params])
+    logics_predict = set([tuple(l) for l in itertools.product(["C"], ["8", "E"], ["2"])])
+    assert(logics==logics_predict)
+    orders = set([tuple([param.order()[j].stringify() for j in range(network.size())])  for param in boolean_params])
+    orders_predict = set([tuple(o) for o in itertools.product(["[0,1]","[1,0]"],["[0]"],["[0]"])])
+    assert(orders == orders_predict)
+
+    network_spec = """
+    A : (~B)
+    B : (~A)(~C)
+    C : (A)"""
+    network = DSGRN.Network(network_spec)
+    boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
+    print(
+        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+    logics = set([tuple([param.logic()[j].hex() for j in range(network.size())]) for param in boolean_params])
+    print(logics)
+    assert(len(boolean_params) == 108)
+    logics_predict = set([tuple(l) for l in itertools.product(["0","C","F"], ["0","A", "C","8", "E","F"], ["0","2","3"])])
+    assert(logics==logics_predict)
+    orders = set([tuple([param.order()[j].stringify() for j in range(network.size())])  for param in boolean_params])
+    orders_predict = set([tuple(o) for o in itertools.product(["[0,1]","[1,0]"],["[0]"],["[0]"])])
+    assert(orders == orders_predict)
+
