@@ -96,6 +96,16 @@ def test3():
     assert(b)
     assert(ess_net_spec == "A : (~B) : E\nB : (~A)(~C) : E\nC : (A) : E")
 
+    network_spec = "B : (~A)(~C) : E\nA : (~B) : E\nC : (A) : E"
+    noness = pn.make_nonessential(network_spec)
+    assert (noness == "B : (~A)(~C)\nA : (~B)\nC : (A)")
+    network_spec = "B : (~A)(~C)\nA : (~B)\nC : (A)"
+    noness = pn.make_nonessential(network_spec)
+    assert (noness == network_spec)
+    network_spec = "A : (~B) : E\nB : (~A)(~C)\nC : (A) : E"
+    noness = pn.make_nonessential(network_spec)
+    assert (noness == "A : (~B)\nB : (~A)(~C)\nC : (A)")
+
 
 def test4():
     network_spec = "A : (~B)\nB : (~A)(~C)\nC : (A)"
@@ -118,3 +128,5 @@ def test4():
     assert(set(ess_answers) == set(essential_neighbors))
 
 
+if __name__ == "__main__":
+    test3()
