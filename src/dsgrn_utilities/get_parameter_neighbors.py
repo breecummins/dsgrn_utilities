@@ -18,6 +18,18 @@ def make_essential(net_spec):
     return nonessential, "\n".join(newnodes)
 
 
+def make_nonessential(net_spec):
+    nodes = [nodespec for nodespec in net_spec.split("\n") if nodespec]
+    newnodes = []
+    for nodespec in nodes:
+        if nodespec.count(":") == 2:
+            cind = nodespec.rindex(":")
+            newnodes.append(nodespec[:cind].strip())
+        else:
+            newnodes.append(nodespec.strip())
+    return "\n".join(newnodes)
+
+
 def get_essential_parameter_neighbors(parametergraph):
     '''
     This function returns the list of co-dimension 1 neighboring parameters of the essential parameters in a network.
