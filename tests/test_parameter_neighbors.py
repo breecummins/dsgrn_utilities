@@ -25,7 +25,8 @@ def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
     assert(MBF_indices == ans1)
     ans2 = set([param_graph.index(param) for param in params1 + params2])
     neighbors = pn.get_parameter_neighbors_from_list(param_graph,MBF_indices)
-    assert(set(neighbors) == ans2)
+    ans3 = ans2.difference(MBF_indices)
+    assert(set(neighbors) == ans3)
 
     #all orders
     boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
@@ -34,7 +35,7 @@ def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
     assert(MBF_indices == ans2)
     neighbors = pn.get_parameter_neighbors_from_list(param_graph,MBF_indices)
     # no extra neighbors possible in essential graph
-    assert(MBF_indices == set(neighbors))
+    assert(neighbors == set([]))
 
 
 def test2():
@@ -55,9 +56,9 @@ def test2():
     a = [build.construct_parameter(network,h,orders) for h in logics1+logics2+logics3]
     b_orders = [[1,0],[0],[0]]
     b = [build.construct_parameter(network,h,b_orders) for h in itertools.product(["0","C","F"],["8"],["0"])]
-    ans = [param_graph.index(param) for param in a + b]
-    answers = set(param_indices).union(ans)
-    assert(answers == neighbors)
+    ans = set([param_graph.index(param) for param in a + b]).difference(param_indices)
+    # answers = set(param_indices).union(ans)
+    assert(ans == neighbors)
 
 
 def test2a(path2DSGRN=os.path.expanduser("../../DSGRN")):
