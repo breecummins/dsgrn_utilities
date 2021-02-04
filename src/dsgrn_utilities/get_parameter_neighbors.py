@@ -71,7 +71,8 @@ def get_parameter_neighbors_from_list(parametergraph,paramlist):
     :param paramlist: list of DSGRN parameter indices
     :return: List of parameter indices including paramlist along with neighbors
     '''
-    friends_and_neighbors = set(paramlist).union([q for p in paramlist for q in parametergraph.adjacencies(p,"codim1")])
+    friends_and_neighbors = set([q for p in paramlist for q in parametergraph.adjacencies(p,"codim1")])
+    friends_and_neighbors.difference_update(paramlist)
     return friends_and_neighbors
 
 
@@ -88,7 +89,5 @@ def get_Boolean_parameter_neighbors(network,path2DSGRN):
     MBFs = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_single_order(network, path2DSGRN)]
     MBFs_all_orders = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_all_orders(network, path2DSGRN)]
     neighbors = get_parameter_neighbors_from_list(parametergraph,MBFs_all_orders)
-    # remove duplicate MBFs; i.e. those that have threshold permutations within a monotone Boolean parameter
-    neighbors.difference_update(MBFs_all_orders)
     return MBFs, neighbors
 
