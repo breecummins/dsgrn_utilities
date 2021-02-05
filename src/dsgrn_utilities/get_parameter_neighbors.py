@@ -21,19 +21,21 @@ def make_essential(net_spec):
 def make_nonessential(net_spec):
     nodes = [nodespec for nodespec in net_spec.split("\n") if nodespec]
     newnodes = []
+    essential = False
     for nodespec in nodes:
         if nodespec.count(":") == 2:
+            essential = True
             cind = nodespec.rindex(":")
             newnodes.append(nodespec[:cind].strip())
         else:
             newnodes.append(nodespec.strip())
-    return "\n".join(newnodes)
+    return essential, "\n".join(newnodes)
 
 
 def get_essential_parameter_neighbors(parametergraph):
     '''
     This function returns the list of co-dimension 1 neighboring parameters of the essential parameters in a network.
-    :param parametergraph: Parameter graph of a network with at least one nonessential node.
+    :param parametergraph: Parameter graph of a network with at least one NONESSENTIAL node.
     :return: List of essential parameters and list of neighboring parameters.
     '''
     # If all nodes are essential return empty list
@@ -62,11 +64,42 @@ def get_essential_parameter_neighbors(parametergraph):
     return ess_par_indices, list(ess_par_neighbors)
 
 
+def get_parameter_neighbors_from_list_in_nonessential_pg(parametergraph,paramlist):
+    '''
+    This function returns the list of co-dimension 1 neighboring parameters IN THE NONESSENTIAL PARAMETER GRAPH
+    for each of the parameters in paramlist associated to the supplied parameter graph. If the supplied parameter graph
+    is nonessential, then all neighbors will be found.
+    :param parametergraph: Parameter graph of a network with at least one ESSENTIAL node.
+    :param paramlist: list of parameter indices to find neighbors for in the full nonessential graph
+    :return: List of new parameter indices in the nonessential graph for each index in paramlist and
+    list of neighboring parameter indices.
+    '''
+    # If all nodes are essential return empty list
+    net_spec = parametergraph.network().specification()
+    essential, noness_net_spec = make_nonessential(net_spec)
+    noness_parametergraph = DSGRN.ParameterGraph(DSGRN.Network(noness_net_spec))
+    parlist_indices = []
+    parlist_neighbors = set([])
+    for pindex in paramlist:
+        # Get the parameter object
+        par = parametergraph.parameter(pindex)
+        # Get its index in the nonessential parameter graph
+        full_pindex = noness_parametergraph.index(par)
+        # Add the index to the list of essential parameters
+        parlist_indices.append(full_pindex)
+        # Get the co-dimension 1 neighbors of this essential parameter
+        for p in noness_parametergraph.adjacencies(full_pindex,"codim1"):
+            parlist_neighbors.add(p)
+    # Remove neighbors that are in the input list
+    parlist_neighbors.difference_update(parlist_indices)
+    # Return list of essential parameters and its neighbors
+    return parlist_indices, list(parlist_neighbors)
 
 
 def get_parameter_neighbors_from_list(parametergraph,paramlist):
     '''
-    This function returns the list of the co-dimension 1 neighboring parameters of the parameters in paramlist.
+    This function returns the list of the co-dimension 1 neighboring parameters of the parameters in paramlist
+    from the supplied parameter graph.
     :param parametergraph: DSGRN parameter graph of a network.
     :param paramlist: list of DSGRN parameter indices
     :return: List of parameter indices including paramlist along with neighbors
