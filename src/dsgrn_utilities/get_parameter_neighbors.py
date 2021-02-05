@@ -76,7 +76,7 @@ def get_parameter_neighbors_from_list(parametergraph,paramlist):
     return friends_and_neighbors
 
 
-def get_Boolean_parameter_neighbors(network,path2DSGRN):
+def get_Boolean_parameter_neighbors(network):
     '''
     This function returns the list of MBF parameter indices (in one threshold permutation) and a list of the
     co-dimension 1 neighbors of the Boolean parameters, including all order permutations.
@@ -86,8 +86,8 @@ def get_Boolean_parameter_neighbors(network,path2DSGRN):
     :return: List of MBF parameter indices and list of neighbor indices.
     '''
     parametergraph = DSGRN.ParameterGraph(network)
-    MBFs = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_single_order(network, path2DSGRN)]
-    MBFs_all_orders = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_all_orders(network, path2DSGRN)]
+    MBFs = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_single_order(network)]
+    MBFs_all_orders = [parametergraph.index(p) for p in sbp.subset_boolean_parameters_all_orders(network)]
     neighbors = get_parameter_neighbors_from_list(parametergraph,MBFs_all_orders)
     return MBFs, neighbors
 

@@ -1,19 +1,17 @@
-import DSGRN,os,itertools
+import DSGRN,itertools
 import dsgrn_utilities.get_parameter_neighbors as pn
 import dsgrn_utilities.select_boolean_params as selectbool
 import dsgrn_utilities.parameter_building as build
 
 
-def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
-    print(
-        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+def test1():
     network_spec = """
     A : (~B) : E
     B : (~A)(~C) : E
     C : (A) : E"""
     network = DSGRN.Network(network_spec)
     #single order
-    boolean_params = selectbool.subset_boolean_parameters_single_order(network, path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters_single_order(network)
     param_graph = DSGRN.ParameterGraph(network)
     MBF_indices = set([param_graph.index(param) for param in boolean_params])
     logics = list(itertools.product(["C"],["8","E"],["2"]))
@@ -29,7 +27,7 @@ def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
     assert(set(neighbors) == ans3)
 
     #all orders
-    boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters_all_orders(network)
     param_graph = DSGRN.ParameterGraph(network)
     MBF_indices = set([param_graph.index(param) for param in boolean_params])
     assert(MBF_indices == ans2)
@@ -61,13 +59,11 @@ def test2():
     assert(ans == neighbors)
 
 
-def test2a(path2DSGRN=os.path.expanduser("../../DSGRN")):
-    print(
-        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+def test2a():
     network_spec = "A : (~B)\nB : (~A)(~C)\nC : (A)"
     network = DSGRN.Network(network_spec)
     param_graph = DSGRN.ParameterGraph(network)
-    MBFs, all_neighbors = pn.get_Boolean_parameter_neighbors(network,path2DSGRN)
+    MBFs, all_neighbors = pn.get_Boolean_parameter_neighbors(network)
     logics1 = list(itertools.product(["0","C","F"],["0","8","A","C","E","F"],["0","2","3"]))
     orders1 = [[0,1],[0],[0]]
     a = [build.construct_parameter(network,h,orders1) for h in logics1]

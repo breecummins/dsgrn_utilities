@@ -30,7 +30,7 @@ def get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN):
     :return: The list of hex strings resulting from reading each line in the logic .dat file.
     '''
     logic_file = build_logic_file_name(num_inedges,num_outedges,group,essential)
-    hexstrings = [h.strip() for h in open(os.path.join(os.path.abspath(path2DSGRN),"src/DSGRN/Resources/logic/{}".format(logic_file))).readlines()]
+    hexstrings = [h.strip() for h in open(os.path.join(os.path.abspath(path2DSGRN),"{}".format(logic_file))).readlines()]
     return hexstrings
 
 

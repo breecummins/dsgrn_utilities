@@ -2,15 +2,14 @@ import DSGRN, os, itertools
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.select_boolean_params as selectbool
 
-def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
+def test1():
     network_spec = """
     x : (x)(y)(~z) : E
     y : (x)(~z) : E
     z : (y) : E"""
     network = DSGRN.Network(network_spec)
     pg = DSGRN.ParameterGraph(network)
-    boolean_params = selectbool.subset_boolean_parameters(network,path2DSGRN)
-    print("This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+    boolean_params = selectbool.subset_boolean_parameters(network)
     assert(len(boolean_params) == 18)
     list_of_hexcodes = ["C000","FFFC","FCC0","FFC0","FCF0","FCCC","FC00","F0C0","CCC0"]
     morsegraphs = []
@@ -36,7 +35,7 @@ def test1(path2DSGRN=os.path.expanduser("../../DSGRN")):
         assert(mg == mg2)
 
 
-def test2(path2DSGRN=os.path.expanduser("../../DSGRN")):
+def test2():
     network_spec = """
     A : (C)(~B) : E
     B : (~A)(~C) : E
@@ -44,8 +43,7 @@ def test2(path2DSGRN=os.path.expanduser("../../DSGRN")):
     D : (~A)(~B) : E"""
     network = DSGRN.Network(network_spec)
     pg = DSGRN.ParameterGraph(network)
-    boolean_params = selectbool.subset_boolean_parameters_single_order(network,path2DSGRN)
-    print("This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
+    boolean_params = selectbool.subset_boolean_parameters_single_order(network)
     assert(len(boolean_params) == 16)
     for param in boolean_params:
         # original parameter description
@@ -64,25 +62,24 @@ def test2(path2DSGRN=os.path.expanduser("../../DSGRN")):
 
 
 def test3():
-    path2DSGRN = os.path.expanduser("../../DSGRN")
     network_file = "toggle_switch_33node_reduction_4node.txt"
     network = DSGRN.Network(network_file)
-    boolean_params = selectbool.subset_boolean_parameters(network,path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters(network)
     print("This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     assert(len(boolean_params) == 48000)
     network_file = "toggle_switch_33node_reduction_4node_E.txt"
     network = DSGRN.Network(network_file)
-    boolean_params = selectbool.subset_boolean_parameters(network,path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters(network)
     assert(len(boolean_params) == 1458)
 
 
-def test4(path2DSGRN=os.path.expanduser("../../DSGRN")):
+def test4():
     network_spec = """
     A : (~B) : E
     B : (~A)(~C) : E
     C : (A) : E"""
     network = DSGRN.Network(network_spec)
-    boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters_all_orders(network)
     print(
         "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     assert(len(boolean_params) == 4)
@@ -98,7 +95,7 @@ def test4(path2DSGRN=os.path.expanduser("../../DSGRN")):
     B : (~A)(~C)
     C : (A)"""
     network = DSGRN.Network(network_spec)
-    boolean_params = selectbool.subset_boolean_parameters_all_orders(network, path2DSGRN)
+    boolean_params = selectbool.subset_boolean_parameters_all_orders(network)
     print(
         "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     logics = set([tuple([param.logic()[j].hex() for j in range(network.size())]) for param in boolean_params])

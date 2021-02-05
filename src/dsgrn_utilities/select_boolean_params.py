@@ -1,6 +1,16 @@
-import itertools
+import itertools, distutils.sysconfig, os, glob
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.network2logicfile as netlogic
+
+
+def get_path_to_logic_files():
+    path = distutils.sysconfig.get_python_lib()
+    path2DSGRN = glob.glob(os.path.join(path,"DSGRN*"))
+    for dsgrndir in path2DSGRN:
+        logic_path = os.path.join(dsgrndir,"Resources/logic")
+        if os.path.isdir(logic_path):
+            return logic_path
+    raise ValueError("Path to DSGRN logic files not found.")
 
 
 def get_possible_hex_numbers(num_inedges,num_outedges,len_hex_str):
@@ -36,17 +46,16 @@ def get_possible_hex_numbers(num_inedges,num_outedges,len_hex_str):
     return boolean_hex
 
 
-def subset_boolean_parameters_single_order(network,path2DSGRN):
+def subset_boolean_parameters_single_order(network):
     '''
     Alternative name for subset_boolean_parameters.
     :param network: DSGRN.Network object
-    :param path2DSGRN: string, the top-level directory for the DSGRN git repo.
     :return: List of DSGRN.Parameter objects
     '''
-    return subset_boolean_parameters(network,path2DSGRN)
+    return subset_boolean_parameters(network)
 
 
-def subset_boolean_parameters(network,path2DSGRN):
+def subset_boolean_parameters(network):
     '''
     Given a network, get all the DSGRN parameters that are Boolean functions for a single threshold order.
     Do not use this function when searching for all neighbors to Boolean functions, instead use
@@ -55,8 +64,6 @@ def subset_boolean_parameters(network,path2DSGRN):
     Since all DSGRN parameters are monotone, any Boolean function that is not monotone is also not a DSGRN parameter.
     Therefore, the output list contains the DSGRN.Parameter objects associated to every possible MBF for the network.
     :param network: DSGRN.Network object
-    :param path2DSGRN: string, the top-level directory for the DSGRN git repo. Example: "~/DSGRN", if the repo is in
-    your home directory.
     :return: List of DSGRN.Parameter objects
     '''
     # pull out information about individual nodes from the network
@@ -70,7 +77,7 @@ def subset_boolean_parameters(network,path2DSGRN):
         if oe == 0:
             oe = 1
         # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
-        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,path2DSGRN)
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
         len_hex_strs.append(len(hexcodes_in_file[0]))
         # construct all possible Boolean functions
         boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_strs[-1])
@@ -86,7 +93,7 @@ def subset_boolean_parameters(network,path2DSGRN):
     return boolean_params
 
 
-def subset_boolean_parameters_all_orders(network,path2DSGRN):
+def subset_boolean_parameters_all_orders(network):
     '''
     Given a network, get all the DSGRN parameters that are Boolean functions for all threshold orders.
     This is the function to use when assessing neighbors for Boolean functions.
@@ -95,8 +102,6 @@ def subset_boolean_parameters_all_orders(network,path2DSGRN):
     Since all DSGRN parameters are monotone, any Boolean function that is not monotone is also not a DSGRN parameter.
     Therefore, the output list contains the DSGRN.Parameter objects associated to every possible MBF for the network.
     :param network: DSGRN.Network object
-    :param path2DSGRN: string, the top-level directory for the DSGRN git repo. Example: "~/DSGRN", if the repo is in
-    your home directory.
     :return: List of DSGRN.Parameter objects
     '''
     # pull out information about individual nodes from the network
@@ -110,7 +115,7 @@ def subset_boolean_parameters_all_orders(network,path2DSGRN):
         if oe == 0:
             oe = 1
         # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
-        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,path2DSGRN)
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
         len_hex_strs.append(len(hexcodes_in_file[0]))
         # construct all possible Boolean functions
         boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_strs[-1])
