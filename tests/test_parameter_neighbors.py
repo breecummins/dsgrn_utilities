@@ -94,13 +94,13 @@ def test3():
     assert(ess_net_spec == "A : (~B) : E\nB : (~A)(~C) : E\nC : (A) : E")
 
     network_spec = "B : (~A)(~C) : E\nA : (~B) : E\nC : (A) : E"
-    noness = pn.make_nonessential(network_spec)
+    ess,noness = pn.make_nonessential(network_spec)
     assert (noness == "B : (~A)(~C)\nA : (~B)\nC : (A)")
     network_spec = "B : (~A)(~C)\nA : (~B)\nC : (A)"
-    noness = pn.make_nonessential(network_spec)
+    ess,noness = pn.make_nonessential(network_spec)
     assert (noness == network_spec)
     network_spec = "A : (~B) : E\nB : (~A)(~C)\nC : (A) : E"
-    noness = pn.make_nonessential(network_spec)
+    ess,noness = pn.make_nonessential(network_spec)
     assert (noness == "A : (~B)\nB : (~A)(~C)\nC : (A)")
 
 
@@ -125,5 +125,31 @@ def test4():
     assert(set(ess_answers) == set(essential_neighbors))
 
 
+def test5():
+    network_spec = "A : (~B)\nB : (~A)(~C)\nC : (A) : E"
+    network = DSGRN.Network(network_spec)
+    param_graph = DSGRN.ParameterGraph(network)
+    essential, noness_net_spec = pn.make_nonessential(network_spec)
+    assert(noness_net_spec == "A : (~B)\nB : (~A)(~C)\nC : (A)")
+    noness_network = DSGRN.Network(noness_net_spec)
+    noness_param_graph = DSGRN.ParameterGraph(noness_network)
+    orders1 = [[0,1],[0],[0]]
+    orders2 = [[1,0],[0],[0]]
+    logics_all_hexcodes = list(itertools.product(["0","4","5","C","D","F"],["0","8","A","C","E","F"],["2"]))
+    logics1 = list(itertools.product(["0"],["0"],["2"]))
+    ans1 = [build.construct_parameter(network, h, orders1) for h in logics1]
+    ans2 = [build.construct_parameter(network, h, orders2) for h in logics1]
+    paramlist = [param_graph.index(param) for param in ans1 + ans2]
+    new_paramlist, neighbors = pn.get_parameter_neighbors_from_list_in_nonessential_pg(param_graph, paramlist)
+    assert(set(new_paramlist) == set([noness_param_graph.index(param) for param in ans1 + ans2]))
+    logics2 = list(itertools.product(["0"],["0"],["0","3"]))
+    logics3 = list(itertools.product(["4"],["0"],["2"]))
+    logics4 = list(itertools.product(["0"],["8"],["2"]))
+    ans1 = [build.construct_parameter(noness_network,h,orders1) for h in logics3+logics2+logics4]
+    ans2 = [build.construct_parameter(noness_network,h,orders2) for h in logics3+logics2+logics4]
+    neighbor_check = [noness_param_graph.index(param) for param in ans1 + ans2]
+    assert(set(neighbors) == set(neighbor_check))
+
+
 if __name__ == "__main__":
-    test3()
+    test5()
