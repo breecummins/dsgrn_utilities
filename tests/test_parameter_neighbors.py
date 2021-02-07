@@ -151,5 +151,32 @@ def test5():
     assert(set(neighbors) == set(neighbor_check))
 
 
+def test6():
+    network_spec = "i1 : i1 : E\ni2 : i2 : E\no : (~x3)(~x4) : E\nx1 : i1 : E\nx2 : i2 : E\nx3 : ~x1 : E\nx4 : (~x2)(~x3) : E"
+    network = DSGRN.Network(network_spec)
+    param_graph = DSGRN.ParameterGraph(network)
+    essential, noness_net_spec = pn.make_nonessential(network_spec)
+    noness_network = DSGRN.Network(noness_net_spec)
+    noness_param_graph = DSGRN.ParameterGraph(noness_network)
+    orders1 = [[0,1],[0,1],[0],[0],[0],[0,1],[0]]
+    orders2 = [[0,1],[0,1],[0],[0],[0],[1,0],[0]]
+    essential_logic = ["C","C","8","2","2","C","8"]
+    neighbor_logic =  ["C","C","8","2","2","4","8"]
+    neighbor_orders11 = [[0,1],[1,0],[0],[0],[0],[0,1],[0]]
+    neighbor_orders12 = [[1,0],[0,1],[0],[0],[0],[0,1],[0]]
+    neighbor_orders21 = [[0,1],[1,0],[0],[0],[0],[1,0],[0]]
+    neighbor_orders22 = [[1,0],[0,1],[0],[0],[0],[1,0],[0]]
+    ess_params = [build.construct_parameter(network,essential_logic,o) for o in [orders1,orders2]]
+    ess_pinds = [param_graph.index(p) for p in ess_params]
+    noness_pinds = [noness_param_graph.index(p) for p in ess_params]
+    neighbor_params = [build.construct_parameter(noness_network,neighbor_logic,o) for o in [orders1,orders2]]
+    neighbor_params += [build.construct_parameter(noness_network,essential_logic,o) for o in [neighbor_orders11,neighbor_orders12,neighbor_orders21,neighbor_orders22]]
+    neighbor_pinds = [noness_param_graph.index(p) for p in neighbor_params]
+    found_inds, found_neighbors = pn.get_parameter_neighbors_from_list_in_nonessential_pg(param_graph,ess_pinds)
+    assert(set(noness_pinds) == set(found_inds))
+    assert(set(neighbor_pinds).issubset(found_neighbors))
+
+
+
 if __name__ == "__main__":
-    test5()
+    test6()
