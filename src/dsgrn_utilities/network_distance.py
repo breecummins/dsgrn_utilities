@@ -15,7 +15,7 @@ def transform_edges_from_index_to_label(graph):
     return labeledges
 
 
-def symmetric_difference_graph_distance(netspec1,netspec2):
+def symmetric_difference_graph_distance(netspec1,netspec2,normalized=False):
     '''
     Find the symmetric difference graph distance measure for two DSGRN network specifications.
     This distance assumes that node names are unique identifiers for nodes. In other words, two nodes
@@ -25,6 +25,7 @@ def symmetric_difference_graph_distance(netspec1,netspec2):
 
     :param netspec1: DSGRN network specification
     :param netspec2: DSGRN network specification
+    :param normalized: True or False, whether or not to normalize by the size of the graphs
     :return: The sum of the difference between the node sets and edge sets for the two networks (the symmetric difference).
     '''
     g1 = gt.getGraphFromNetworkSpec(netspec1)
@@ -35,6 +36,11 @@ def symmetric_difference_graph_distance(netspec1,netspec2):
     edges1 = transform_edges_from_index_to_label(g1)
     edges2 = transform_edges_from_index_to_label(g2)
     edge_diff = edges1.symmetric_difference(edges2)
-    return len(node_diff) + len(edge_diff)
+    diff = len(node_diff) + len(edge_diff)
+    if normalized:
+        denom = len(nodes1) + len(nodes2) + len(edges1) + len(edges2)
+        return diff / denom
+    else:
+        return diff
 
 
