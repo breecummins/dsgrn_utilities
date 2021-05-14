@@ -1,6 +1,8 @@
 import itertools, distutils.sysconfig, os, glob
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.network2logicfile as netlogic
+from math import factorial
+from functools import reduce
 
 
 def get_path_to_logic_files():
@@ -130,3 +132,33 @@ def subset_boolean_parameters_all_orders(network):
             param = buildparam.construct_parameter(network,hex_codes,orders)
             boolean_params.append(param)
     return boolean_params
+
+
+def count_boolean_parameters(network):
+    '''
+    Given a network, count all the DSGRN parameters that are strict monotone Boolean functions.
+    :param network: DSGRN.Network object
+    :return: Two integers, the count for a single order and the count for all orders.
+    '''
+    # pull out information about individual nodes from the network
+    num_inedges, num_outedges, groups, essential = netlogic.get_info_from_network(network)
+    num_hexcodes = []
+    num_orders = []
+    # For each node in the network, get the number of hexcodes and the number of orders
+    for ie,oe,g,e in zip(num_inedges,num_outedges,groups,essential):
+        # handle hack for no out-edges (fake output threshold)
+        if oe == 0:
+            oe = 1
+        # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
+        len_hex_str = len(hexcodes_in_file[0])
+        # construct all possible Boolean functions
+        boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_str)
+        # find all monotone Boolean functions by intersecting all Boolean functions with DSGRN logic parameters
+        num_hexcodes.append(len(set(hexcodes_in_file).intersection(boolean_functions)))
+        # the number of orders is the factorial of the number of outedges
+        num_orders.append(factorial(oe))
+    single_order_count = reduce((lambda x, y: x * y), num_hexcodes)
+    all_orders_count = single_order_count * reduce((lambda x, y: x * y), num_orders)
+    return single_order_count, all_orders_count
+
