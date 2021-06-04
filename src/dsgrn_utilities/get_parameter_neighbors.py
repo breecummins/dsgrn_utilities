@@ -3,6 +3,20 @@
 
 import DSGRN
 import dsgrn_utilities.select_boolean_params as sbp
+import dsgrn_utilities.network2logicfile as netlogic
+
+
+def is_essential(dsgrn_parameter):
+    network = dsgrn_parameter.network()
+    inedges, outedges, gps, ess = netlogic.get_info_from_network(network)
+    outedges = [i if i > 0 else 1 for i in outedges]
+    if all(ess):
+        return True
+    for node_ind in range(network.size()):
+        hexstrings = netlogic.get_hexstrings(inedges[node_ind],outedges[node_ind],gps[node_ind],True)
+        if dsgrn_parameter.logic()[node_ind].hex() not in hexstrings:
+            return False
+    return True
 
 
 def make_essential(net_spec):

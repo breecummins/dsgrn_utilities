@@ -27,6 +27,10 @@ def build_logic_file_name(num_in,num_out,group,ess):
     return logic_file
 
 
+def get_hexstrings(num_inedges,num_outedges,group,essential,path2DSGRN=None):
+    return get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN)
+
+
 def get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN=None):
     '''
     Read the hex codes from a DSGRN logic .dat file.

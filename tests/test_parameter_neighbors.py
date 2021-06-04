@@ -177,6 +177,32 @@ def test6():
     assert(set(neighbor_pinds).issubset(found_neighbors))
 
 
+def test7():
+    network_spec = "i1 : i1 : E\ni2 : i2 : E\no : (~x3)(~x4) : E\nx1 : i1 : E\nx2 : i2 : E\nx3 : ~x1 : E\nx4 : (~x2)(~x3) : E"
+    network = DSGRN.Network(network_spec)
+    param_graph = DSGRN.ParameterGraph(network)
+    param = param_graph.parameter(0)
+    assert(pn.is_essential(param))
+    param = param_graph.parameter(17)
+    assert(pn.is_essential(param))
+    network_spec = "i1 : i1\ni2 : i2 : E\no : (~x3)(~x4) : E\nx1 : i1 : E\nx2 : i2 : E\nx3 : ~x1 : E\nx4 : (~x2)(~x3) : E"
+    network = DSGRN.Network(network_spec)
+    param_graph = DSGRN.ParameterGraph(network)
+    param = param_graph.parameter(0)
+    assert(not pn.is_essential(param))
+    param = param_graph.parameter(3)
+    assert(pn.is_essential(param))
+    network_spec = "i1 : i1\ni2 : i2\no : (~x3)(~x4) : E\nx1 : i1 : E\nx2 : i2 : E\nx3 : ~x1 : E\nx4 : (x4)(~x2)(~x3) : E"
+    network = DSGRN.Network(network_spec)
+    param_graph = DSGRN.ParameterGraph(network)
+    param = param_graph.parameter(0)
+    assert(not pn.is_essential(param))
+    param = param_graph.parameter(24)
+    assert(pn.is_essential(param))
+
+
+
+
 
 if __name__ == "__main__":
     test6()
