@@ -197,7 +197,11 @@ def test7():
     param_graph = DSGRN.ParameterGraph(network)
     param = param_graph.parameter(0)
     assert(not pn.is_essential(param))
-    param = param_graph.parameter(24)
+    param = param_graph.parameter(3)
+    assert(not pn.is_essential(param))
+    param = param_graph.parameter(18)
+    assert(not pn.is_essential(param))
+    param = param_graph.parameter(57)
     assert(pn.is_essential(param))
 
 
