@@ -1,4 +1,4 @@
-import DSGRN, os, itertools
+import DSGRN, itertools
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.select_boolean_params as selectbool
 
@@ -65,7 +65,6 @@ def test3():
     network_file = "toggle_switch_33node_reduction_4node.txt"
     network = DSGRN.Network(network_file)
     boolean_params = selectbool.subset_boolean_parameters(network)
-    print("This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     assert(len(boolean_params) == 48000)
     network_file = "toggle_switch_33node_reduction_4node_E.txt"
     network = DSGRN.Network(network_file)
@@ -80,8 +79,6 @@ def test4():
     C : (A) : E"""
     network = DSGRN.Network(network_spec)
     boolean_params = selectbool.subset_boolean_parameters_all_orders(network)
-    print(
-        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     assert(len(boolean_params) == 4)
     logics = set([tuple([param.logic()[j].hex() for j in range(network.size())]) for param in boolean_params])
     logics_predict = set([tuple(l) for l in itertools.product(["C"], ["8", "E"], ["2"])])
@@ -96,8 +93,6 @@ def test4():
     C : (A)"""
     network = DSGRN.Network(network_spec)
     boolean_params = selectbool.subset_boolean_parameters_all_orders(network)
-    print(
-        "This test assumes that dsgrn_utilities has the same path as DSGRN.\nWill fail with FileNotFound error if not.")
     logics = set([tuple([param.logic()[j].hex() for j in range(network.size())]) for param in boolean_params])
     print(logics)
     assert(len(boolean_params) == 108)
@@ -106,4 +101,15 @@ def test4():
     orders = set([tuple([param.order()[j].stringify() for j in range(network.size())])  for param in boolean_params])
     orders_predict = set([tuple(o) for o in itertools.product(["[0,1]","[1,0]"],["[0]"],["[0]"])])
     assert(orders == orders_predict)
+
+
+def test5():
+    network_file = "toggle_switch_33node_reduction_4node.txt"
+    network = DSGRN.Network(network_file)
+    single_order, all_orders = selectbool.count_boolean_parameters(network)
+    assert(single_order == 48000)
+    network_file = "toggle_switch_33node_reduction_4node_E.txt"
+    network = DSGRN.Network(network_file)
+    single_order, all_orders = selectbool.count_boolean_parameters(network)
+    assert(single_order == 1458)
 
