@@ -1,4 +1,14 @@
-import os
+import os, distutils.sysconfig, glob
+
+
+def get_path_to_logic_files():
+    path = distutils.sysconfig.get_python_lib()
+    path2DSGRN = glob.glob(os.path.join(path,"DSGRN*"))
+    for dsgrndir in path2DSGRN:
+        logic_path = os.path.join(dsgrndir,"Resources/logic")
+        if os.path.isdir(logic_path):
+            return logic_path
+    raise ValueError("Path to DSGRN logic files not found.")
 
 
 def build_logic_file_name(num_in,num_out,group,ess):
@@ -17,7 +27,7 @@ def build_logic_file_name(num_in,num_out,group,ess):
     return logic_file
 
 
-def get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN):
+def get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN=None):
     '''
     Read the hex codes from a DSGRN logic .dat file.
 
@@ -26,9 +36,11 @@ def get_logic_file(num_inedges,num_outedges,group,essential,path2DSGRN):
     :param group: A list of integers, each representing a sum in the product represented in the DSGRN network specification.
                   For example, if the node given is 'A : (B)(C+D)(~E)' then the corresponding group is [1,2,1].
     :param essential: True or False. Whether or not the node is essential.
-    :param path2DSGRN: The user's path to the DSGRN git repository, such as "~/DSGRN".
+    :param path2DSGRN: (optional) The user's path to the DSGRN git repository, such as "~/DSGRN".
     :return: The list of hex strings resulting from reading each line in the logic .dat file.
     '''
+    if not path2DSGRN:
+        path2DSGRN = get_path_to_logic_files()
     logic_file = build_logic_file_name(num_inedges,num_outedges,group,essential)
     hexstrings = [h.strip() for h in open(os.path.join(os.path.abspath(path2DSGRN),"{}".format(logic_file))).readlines()]
     return hexstrings

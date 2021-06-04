@@ -1,16 +1,6 @@
-import itertools, distutils.sysconfig, os, glob
+import itertools
 import dsgrn_utilities.parameter_building as buildparam
 import dsgrn_utilities.network2logicfile as netlogic
-
-
-def get_path_to_logic_files():
-    path = distutils.sysconfig.get_python_lib()
-    path2DSGRN = glob.glob(os.path.join(path,"DSGRN*"))
-    for dsgrndir in path2DSGRN:
-        logic_path = os.path.join(dsgrndir,"Resources/logic")
-        if os.path.isdir(logic_path):
-            return logic_path
-    raise ValueError("Path to DSGRN logic files not found.")
 
 
 def get_possible_hex_numbers(num_inedges,num_outedges,len_hex_str):
@@ -77,7 +67,7 @@ def subset_boolean_parameters(network):
         if oe == 0:
             oe = 1
         # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
-        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e)
         len_hex_strs.append(len(hexcodes_in_file[0]))
         # construct all possible Boolean functions
         boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_strs[-1])
@@ -115,7 +105,7 @@ def subset_boolean_parameters_all_orders(network):
         if oe == 0:
             oe = 1
         # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
-        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e)
         len_hex_strs.append(len(hexcodes_in_file[0]))
         # construct all possible Boolean functions
         boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_strs[-1])
