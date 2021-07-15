@@ -140,7 +140,7 @@ def count_boolean_parameters(network):
         if oe == 0:
             oe = 1
         # read the appropriate logic .dat file and find out the length of the hex codes in the file for DSGRN formatting
-        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,get_path_to_logic_files())
+        hexcodes_in_file = netlogic.get_logic_file(ie,oe,g,e,netlogic.get_path_to_logic_files())
         len_hex_str = len(hexcodes_in_file[0])
         # construct all possible Boolean functions
         boolean_functions = get_possible_hex_numbers(ie,oe,len_hex_str)
