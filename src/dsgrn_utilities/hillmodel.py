@@ -150,6 +150,7 @@ class hillmodel(object):
       plt.savefig(savename, bbox_inches='tight')
     if show:
       plt.show()
+    plt.close()
 
 # The remainder of the file consists of private methods implementing various parsing voodoo.
 
