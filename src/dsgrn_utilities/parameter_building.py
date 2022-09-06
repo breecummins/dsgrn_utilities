@@ -141,13 +141,13 @@ def construct_parameter(network,hex_codes,orders):
     '''
     logic_params = []
     order_params = []
-    for k,i in enumerate(range(network.size())):
+    for i in range(network.size()):
         num_indeges = len(network.inputs(i))
         num_outedges = len(network.outputs(i))
         # hack for handling no out-edges
         if num_outedges == 0:
             num_outedges = 1
-        logic_params.append(logic_parameter(num_indeges,num_outedges,hex_codes[k]))
-        order_params.append(order_parameter(orders[k]))
+        logic_params.append(logic_parameter(num_indeges,num_outedges,hex_codes[i]))
+        order_params.append(order_parameter(orders[i]))
     return DSGRN.Parameter(logic_params,order_params,network)
 
