@@ -87,6 +87,11 @@ def subset_boolean_parameters_all_orders(network):
     Given a network, get all the DSGRN parameters that are Boolean functions for all threshold orders.
     This is the function to use when assessing neighbors for Boolean functions.
     (See get_Boolean_parameter_neighbors_for_MBFs() in get_parameter_neighbors.py.)
+    
+    Peter proved that the set of all strict monotone Boolean functions is a subset of DSGRN parameters, so we recover all MBFs, when considering a nonessential network.
+    Since all DSGRN parameters are monotone, any Boolean function that is not monotone is also not a DSGRN parameter.
+    Therefore, the output list contains the DSGRN.Parameter objects associated to every possible strict MBF for the network.
+    
     :param network: DSGRN.Network object
     :return: List of DSGRN.Parameter objects
     '''
@@ -121,6 +126,11 @@ def subset_boolean_parameters_all_orders(network):
 def count_boolean_parameters(network):
     '''
     Given a network, count all the DSGRN parameters that are strict monotone Boolean functions.
+
+    Peter proved that the set of all strict monotone Boolean functions is a subset of DSGRN parameters, so we recover all MBFs, when considering a nonessential network.
+    Since all DSGRN parameters are monotone, any Boolean function that is not monotone is also not a DSGRN parameter.
+    Therefore, the output list contains the DSGRN.Parameter objects associated to every possible strict MBF for the network.
+
     :param network: DSGRN.Network object
     :return: Two integers, the count for a single order and the count for all orders.
     '''
