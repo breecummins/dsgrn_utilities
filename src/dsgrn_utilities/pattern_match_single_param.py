@@ -33,7 +33,11 @@ def PathMatchStablePartialCycle(domaingraph,patterngraph):
     return False
 
 def check_both(paramind, paramgraph, patterngraph):
-    domaingraph = DSGRN.DomainGraph(paramgraph.parameter(paramind))
+    # Either a parameter index or a DSGRN parameter object may be passed
+    if isinstance(paramind,int):
+        domaingraph = DSGRN.DomainGraph(paramgraph.parameter(paramind))
+    else:
+        domaingraph = DSGRN.DomainGraph(paramind)
     dgmatch = PathMatchDomainGraph(domaingraph,patterngraph)
     fcmatch = PathMatchStableFullCycle(domaingraph,patterngraph)
     return dgmatch, fcmatch
@@ -65,6 +69,7 @@ def get_names(network):
 
 
 def main(paramind, paramgraph, network, samp_time, samp_traces, epsilons=[0.0]):
+    # Either a parameter index or a DSGRN parameter object may be passed as paramind
     curves = transform_ts(samp_time,samp_traces,get_names(network))
     poes = makeposets(curves,epsilons)
     patterngraphs = make_patterngraphs(poes,network)
@@ -74,22 +79,28 @@ def main(paramind, paramgraph, network, samp_time, samp_traces, epsilons=[0.0]):
 
 
 def main_fc_only(paramind, paramgraph, network, samp_time, samp_traces, epsilons=[0.0]):
+    # Either a parameter index or a DSGRN parameter object may be passed as paramind
+    if isinstance(paramind,int):
+        paramind = paramgraph.parameter(paramind)
     curves = transform_ts(samp_time,samp_traces,get_names(network))
     poes = makeposets(curves,epsilons)
     patterngraphs = make_patterngraphs(poes,network)
     for eps,patterngraph in patterngraphs.items():
         #If stable FC is required, then domain match not needed
-        domaingraph = DSGRN.DomainGraph(paramgraph.parameter(paramind))
+        domaingraph = DSGRN.DomainGraph(paramind)
         fc = PathMatchStableFullCycle(domaingraph, patterngraph)
     return fc, poes
 
 
 def main_pc_only(paramind, paramgraph, network, samp_time, samp_traces, epsilons=[0.0]):
+    # Either a parameter index or a DSGRN parameter object may be passed as paramind
+    if isinstance(paramind,int):
+        paramind = paramgraph.parameter(paramind)
     curves = transform_ts(samp_time,samp_traces,get_names(network))
     poes = makeposets(curves,epsilons)
     patterngraphs = make_patterngraphs(poes,network)
     for eps,patterngraph in patterngraphs.items():
-        domaingraph = DSGRN.DomainGraph(paramgraph.parameter(paramind))
+        domaingraph = DSGRN.DomainGraph(paramind)
         pc = PathMatchStablePartialCycle(domaingraph, patterngraph)
     return pc, poes
 
