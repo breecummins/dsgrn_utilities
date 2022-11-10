@@ -25,7 +25,7 @@ def PathMatchStableFullCycle(domaingraph,patterngraph):
 def PathMatchStablePartialCycle(domaingraph,patterngraph):
     morsegraph = DSGRN.MorseGraph(domaingraph)
     for i in range(0, morsegraph.poset().size()):
-        if morsegraph.annotation(i)[0] == "PC" and len(morsegraph.poset().children(i)) == 0:
+        if morsegraph.annotation(i)[0].startswith("PC") and len(morsegraph.poset().children(i)) == 0:
             searchgraph = DSGRN.SearchGraph(domaingraph,i)
             matchinggraph = DSGRN.MatchingGraph(searchgraph,patterngraph)
             if DSGRN.PathMatch(matchinggraph):
